@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
-    id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
 }
 
@@ -58,16 +57,17 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.filament.android)
 
     debugImplementation(libs.androidx.ui.tooling)
 
     // NAVIGATION
     implementation(libs.androidx.navigation.compose)
 
-    // HILT
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    // KOIN
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.androidx.compose)
 
     // NETWORK
     implementation(libs.retrofit2.retrofit)
