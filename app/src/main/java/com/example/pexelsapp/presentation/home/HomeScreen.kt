@@ -257,67 +257,46 @@ fun SearchBar(
     onClearClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var currentQuery by remember { mutableStateOf(query) }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(query) {
-        currentQuery = query
-    }
-
     OutlinedTextField(
-        value = currentQuery,
-        onValueChange = { newQuery ->
-            currentQuery = newQuery
-            onQueryChanged(newQuery)
-        },
+        value = query,
+        onValueChange = onQueryChanged,
         modifier = modifier,
         placeholder = {
             Text(
-                text = "Search for photos...",
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                "Search photos...",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
-        textStyle = MaterialTheme.typography.bodyMedium.copy(
-            color = Color.Black
-        ),
+        singleLine = true,
+        textStyle = MaterialTheme.typography.bodyMedium,
         leadingIcon = {
             Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                tint = RedBackground
+                Icons.Default.Search,
+                null,
+                tint = MaterialTheme.colorScheme.primary
             )
         },
         trailingIcon = {
-            if (currentQuery.isNotEmpty()) {
+            if (query.isNotEmpty()) {
                 Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "Clear search",
-                    modifier = Modifier.clickable {
-                        currentQuery = ""
-                        onClearClick()
-                    },
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    Icons.Default.Clear,
+                    null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clickable { onClearClick() }
                 )
             }
         },
-        singleLine = true,
-
-        keyboardActions = androidx.compose.foundation.text.KeyboardActions(
-            onSearch = {
-                keyboardController?.hide()
-                onSearchSubmitted(currentQuery)
-            }
-        ),
-        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-            imeAction = androidx.compose.ui.text.input.ImeAction.Search
-        ),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = LightGrayBackground,
-            unfocusedContainerColor = LightGrayBackground,
-            focusedBorderColor = Color.Black,
-            unfocusedBorderColor = LightGrayBackground,
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,   // ✅ белый в dark
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+
+            focusedBorderColor = MaterialTheme.colorScheme.outline,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+
+            cursorColor = MaterialTheme.colorScheme.onSurface
         ),
         shape = RoundedCornerShape(50.dp)
     )
@@ -360,66 +339,103 @@ fun FeaturedCollectionsRow(
     }
 }
 
+
 @Composable
 fun FeaturedCollectionCard(
     collection: FeaturedCollection,
-    isSelected: Boolean = false,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    isSelected: Boolean,
+    onClick: () -> Unit
 ) {
-    var isTapped by remember { mutableStateOf(false) }
-
-    val customRedBackground = Color(0xFFBB1020)
-
-    val scale by animateFloatAsState(
-        targetValue = if (isTapped) 0.95f else 1f,
-        animationSpec = androidx.compose.animation.core.tween(durationMillis = 100),
-        label = "collection_card_scale"
+    val bgColor by animateColorAsState(
+        if (isSelected)
+            MaterialTheme.colorScheme.primary
+        else
+            MaterialTheme.colorScheme.surfaceVariant
     )
-
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) customRedBackground else LightGrayBackground
-    )
-
-    LaunchedEffect(isTapped) {
-        if (isTapped) {
-            kotlinx.coroutines.delay(100)
-            isTapped = false
-        }
-    }
 
     Surface(
+        color = bgColor,
         shape = RoundedCornerShape(50),
-        color = backgroundColor,
-        modifier = modifier
-            .padding(horizontal = 4.dp)
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            }
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {
-                    isTapped = true
-                    onClick()
-                }
-            )
+        modifier = Modifier
+            .clickable { onClick() }
     ) {
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = collection.title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = if (isSelected) Color.White else Color.Black
-            )
-        }
+        Text(
+            text = collection.title,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+            color =
+                if (isSelected)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurface
+        )
     }
 }
+
+
+
+
+
+
+//@Composable
+//fun FeaturedCollectionCard(
+//    collection: FeaturedCollection,
+//    isSelected: Boolean = false,
+//    onClick: () -> Unit,
+//    modifier: Modifier = Modifier
+//) {
+//    var isTapped by remember { mutableStateOf(false) }
+//
+//    val customRedBackground = Color(0xFFBB1020)
+//
+//    val scale by animateFloatAsState(
+//        targetValue = if (isTapped) 0.95f else 1f,
+//        animationSpec = androidx.compose.animation.core.tween(durationMillis = 100),
+//        label = "collection_card_scale"
+//    )
+//
+//    val backgroundColor by animateColorAsState(
+//        targetValue = if (isSelected) customRedBackground else LightGrayBackground
+//    )
+//
+//    LaunchedEffect(isTapped) {
+//        if (isTapped) {
+//            kotlinx.coroutines.delay(100)
+//            isTapped = false
+//        }
+//    }
+//
+//    Surface(
+//        shape = RoundedCornerShape(50),
+//        color = backgroundColor,
+//        modifier = modifier
+//            .padding(horizontal = 4.dp)
+//            .graphicsLayer {
+//                scaleX = scale
+//                scaleY = scale
+//            }
+//            .clickable(
+//                interactionSource = remember { MutableInteractionSource() },
+//                indication = null,
+//                onClick = {
+//                    isTapped = true
+//                    onClick()
+//                }
+//            )
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .padding(horizontal = 20.dp, vertical = 12.dp),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Text(
+//                text = collection.title,
+//                style = MaterialTheme.typography.bodyMedium,
+//                fontWeight = FontWeight.Medium,
+//                color = if (isSelected) Color.White else Color.Black
+//            )
+//        }
+//    }
+//}
 
 @Composable
 fun CuratedImagesGrid(

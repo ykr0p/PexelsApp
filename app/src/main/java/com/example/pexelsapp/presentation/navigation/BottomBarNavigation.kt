@@ -31,57 +31,54 @@ fun BottomNavigationBar(
     currentScreen: BottomBarScreen,
     onNavigate: (BottomBarScreen) -> Unit
 ) {
+    val items = bottomBarItems
 
-    val indicatorOffset by animateDpAsState(
-        targetValue = when (currentScreen) {
-            BottomBarScreen.Home -> 75.dp
-            BottomBarScreen.Bookmarks -> 235.dp
-        },
-        animationSpec = tween(durationMillis = 300),
-        label = "indicator_animation"
-    )
-
-    NavigationBar(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
-            .height(70.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+            .height(70.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 8.dp)
+        val itemWidth = maxWidth / items.size
+        val indicatorWidth = 40.dp
+
+        val selectedIndex = items.indexOf(currentScreen)
+
+        val indicatorOffset by animateDpAsState(
+            targetValue =
+                itemWidth * selectedIndex +
+                        itemWidth / 2 -
+                        indicatorWidth / 2,
+            animationSpec = tween(300),
+            label = "indicator"
+        )
+
+        NavigationBar(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
+            Box(modifier = Modifier.fillMaxSize()) {
 
-            Box(
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(4.dp)
-                    .align(Alignment.TopStart)
-                    .offset(x = indicatorOffset)
-                    .clip(CircleShape)
-                    .background(Color(0xFFFF6B6B))
-            )
+                // 🔴 ПОЛОСКА
+                Box(
+                    modifier = Modifier
+                        .offset(x = indicatorOffset)
+                        .padding(top = 6.dp)
+                        .width(indicatorWidth)
+                        .height(4.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFFF6B6B))
+                )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                bottomBarItems.forEach { destination ->
-                    NavigationBarItem(
-                        selected = currentScreen == destination,
-                        onClick = { onNavigate(destination) },
-                        icon = {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-
-                                Spacer(modifier = Modifier.height(3.dp))
-
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items.forEach { destination ->
+                        NavigationBarItem(
+                            selected = currentScreen == destination,
+                            onClick = { onNavigate(destination) },
+                            icon = {
                                 Icon(
                                     painter = painterResource(
                                         if (currentScreen == destination)
@@ -91,20 +88,17 @@ fun BottomNavigationBar(
                                     ),
                                     contentDescription = destination.title,
                                     tint = if (currentScreen == destination)
-                                        Color(0xFFFF6B6B) // Красный цвет для активной иконки
-                                    else MaterialTheme.colorScheme.onSurfaceVariant
+                                        Color(0xFFFF6B6B)
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                            }
-                        },
-                        label = null,
-                        alwaysShowLabel = false,
-                        colors = NavigationBarItemDefaults.colors(
-
-                            selectedTextColor = Color.Transparent,
-                            unselectedTextColor = Color.Transparent,
-                            indicatorColor = Color.Transparent
+                            },
+                            alwaysShowLabel = false,
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = Color.Transparent
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

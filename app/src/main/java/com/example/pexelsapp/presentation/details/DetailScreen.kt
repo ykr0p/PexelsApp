@@ -88,7 +88,7 @@ fun DetailScreen(
                     text = image.photographer,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -127,25 +127,26 @@ fun DetailScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .width(180.dp)
-                            .background(LightGrayBackground, RoundedCornerShape(50.dp))
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                viewModel.downloadImage(
+                                    context = context,
+                                    url = image.imageUrl,
+                                    fileName = "${image.photographer}_${image.id}"
+                                )
+                                onDownloadClick()
+                            }
+                            .padding(end = 12.dp)
                     ) {
 
                         Box(
                             modifier = Modifier
                                 .size(48.dp)
-                                .background(RedBackground, CircleShape)
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = null
-                                ) {
-
-                                    viewModel.downloadImage(
-                                        context = context,
-                                        url = image.imageUrl,
-                                        fileName = "${image.photographer}_${image.id}"
-                                    )
-                                    onDownloadClick()
-                                },
+                                .background(RedBackground, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -155,37 +156,46 @@ fun DetailScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                         }
+
                         Spacer(modifier = Modifier.width(12.dp))
 
                         Text(
                             text = "Download",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-
 
                     Box(
                         modifier = Modifier
                             .size(56.dp)
-                            .background(LightGrayBackground, CircleShape)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null
                             ) {
-
                                 viewModel.toggleBookmark(image)
                             },
                         contentAlignment = Alignment.Center
                     ) {
+                        val bookmarkTint =
+                            if (isBookmarked) {
+                                RedBackground
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
+
                         Icon(
                             painter = painterResource(
-                                if (isBookmarked) R.drawable.bookmark_button_active
-                                else R.drawable.bookmark_button_inactive
+                                if (isBookmarked)
+                                    R.drawable.bookmark_button_active
+                                else
+                                    R.drawable.bookmark_button_inactive
                             ),
-                            contentDescription = if (isBookmarked) "Remove bookmark" else "Add bookmark",
-                            tint = Color.Unspecified,
+                            contentDescription = null,
+                            tint = bookmarkTint,
                             modifier = Modifier.size(25.dp)
                         )
                     }

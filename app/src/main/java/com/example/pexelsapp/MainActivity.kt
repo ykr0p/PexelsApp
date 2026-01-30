@@ -35,27 +35,47 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setFlags()
-        
+
+
         setContent {
             PexelsAppTheme {
-                MainScreen()
+
+                var showSplash by remember { mutableStateOf(true) }
+
+                LaunchedEffect(Unit) {
+                    delay(1600) // ⏱ время анимации
+                    showSplash = false
+                }
+
+                if (showSplash) {
+                    SplashScreen()
+                } else {
+                    MainScreen()
+                }
             }
         }
+
+
+//        setContent {
+//            PexelsAppTheme {
+//                MainScreen()
+//            }
+//        }
     }
-    
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
             setFlags()
         }
     }
-    
+
     private fun setFlags() {
         window.apply {
 
             addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            
+
             // for API 30+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 insetsController?.hide(android.view.WindowInsets.Type.navigationBars())
@@ -63,13 +83,13 @@ class MainActivity : ComponentActivity() {
             } else {
                 // for old API
                 decorView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            or View.SYSTEM_UI_FLAG_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                )
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        )
             }
         }
     }
@@ -104,11 +124,9 @@ fun MainScreen() {
         val touchListener = View.OnTouchListener { _, event ->
             lastTouchTime = System.currentTimeMillis()
 
-            // Immediately hide navigation bar on touch
             systemUiController.isNavigationBarVisible = false
             systemUiController.isStatusBarVisible = false
 
-            // Re-apply flags
             (context as? ComponentActivity)?.window?.decorView?.systemUiVisibility = (
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -161,35 +179,35 @@ fun MainScreen() {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(BottomBarScreen.Home.route) {
-                if (uiState.isLoading) {
-                    SplashScreen()
-                } else {
-                    HomeScreen(
-                        featuredCollections = uiState.featuredCollections,
-                        curatedImages = uiState.curatedImages,
-                        selectedCollection = uiState.selectedCollection,
-                        isLoading = uiState.isRefreshing || uiState.isPerformingSearch,
-                        isLoadingMore = uiState.isLoadingMore,
-                        hasMoreItems = uiState.hasMoreItems,
-                        errorMessage = uiState.errorMessage,
-                        hasNetworkError = uiState.hasNetworkError,
-                        hasRealCachedData = uiState.hasRealCachedData,
-                        usingFallbackData = uiState.usingFallbackData,
-                        currentSearchQuery = uiState.searchQuery,
-                        searchDebounceTime = 500L,
-                        onSearchQueryChanged = homeViewModel::onSearchQueryChanged,
-                        onSearchSubmitted = homeViewModel::onSearchSubmitted,
-                        onClearSearch = homeViewModel::onClearSearch,
-                        onExploreClick = homeViewModel::onExploreClick,
-                        onRefresh = homeViewModel::onRefresh,
-                        onLoadMoreImages = homeViewModel::loadMoreImages,
-                        onRetryClick = homeViewModel::onRetryClick,
-                        onFeaturedCollectionClick = homeViewModel::onFeaturedCollectionSelected,
-                        onImageClick = { image ->
-                            navController.navigate("${BottomBarScreen.Home.route}/detail/${image.id}")
-                        }
-                    )
-                }
+//                if (uiState.isLoading) {
+//                    SplashScreen()
+//                } else {
+                HomeScreen(
+                    featuredCollections = uiState.featuredCollections,
+                    curatedImages = uiState.curatedImages,
+                    selectedCollection = uiState.selectedCollection,
+                    isLoading = uiState.isRefreshing || uiState.isPerformingSearch,
+                    isLoadingMore = uiState.isLoadingMore,
+                    hasMoreItems = uiState.hasMoreItems,
+                    errorMessage = uiState.errorMessage,
+                    hasNetworkError = uiState.hasNetworkError,
+                    hasRealCachedData = uiState.hasRealCachedData,
+                    usingFallbackData = uiState.usingFallbackData,
+                    currentSearchQuery = uiState.searchQuery,
+                    searchDebounceTime = 500L,
+                    onSearchQueryChanged = homeViewModel::onSearchQueryChanged,
+                    onSearchSubmitted = homeViewModel::onSearchSubmitted,
+                    onClearSearch = homeViewModel::onClearSearch,
+                    onExploreClick = homeViewModel::onExploreClick,
+                    onRefresh = homeViewModel::onRefresh,
+                    onLoadMoreImages = homeViewModel::loadMoreImages,
+                    onRetryClick = homeViewModel::onRetryClick,
+                    onFeaturedCollectionClick = homeViewModel::onFeaturedCollectionSelected,
+                    onImageClick = { image ->
+                        navController.navigate("${BottomBarScreen.Home.route}/detail/${image.id}")
+                    }
+                )
+//                }
             }
 
             composable(

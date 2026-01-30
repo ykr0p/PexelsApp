@@ -35,7 +35,7 @@ fun BookmarkScreen(
     onExploreClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
     Scaffold(
         topBar = {
             Box(
@@ -47,7 +47,7 @@ fun BookmarkScreen(
                     text = "Bookmarks",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.align(Alignment.Center)
 
                 )
@@ -85,7 +85,7 @@ fun BookmarkScreen(
                         )
                     }
                 }
-                
+
                 is BookmarkUiState.Empty -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -95,9 +95,9 @@ fun BookmarkScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.padding(32.dp)
                         ) {
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Text(
                                 text = "You haven't saved anything yet",
                                 style = MaterialTheme.typography.headlineSmall,
@@ -124,7 +124,7 @@ fun BookmarkScreen(
                         }
                     }
                 }
-                
+
                 is BookmarkUiState.Success -> {
                     LazyVerticalStaggeredGrid(
                         columns = StaggeredGridCells.Fixed(2),
@@ -141,7 +141,7 @@ fun BookmarkScreen(
                         }
                     }
                 }
-                
+
                 is BookmarkUiState.Error -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -158,18 +158,18 @@ fun BookmarkScreen(
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.error
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             Text(
                                 text = state.message,
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Button(
                                 onClick = { viewModel.loadBookmarks() },
                                 colors = ButtonDefaults.buttonColors(
