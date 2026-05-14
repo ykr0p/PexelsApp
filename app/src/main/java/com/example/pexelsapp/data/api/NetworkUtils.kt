@@ -7,6 +7,7 @@ import android.net.NetworkCapabilities
 import androidx.annotation.RequiresPermission
 
 @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+
 fun hasInternet(context: Context): Boolean {
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

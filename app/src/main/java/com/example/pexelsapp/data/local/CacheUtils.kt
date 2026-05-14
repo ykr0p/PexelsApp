@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 object CacheUtils {
 
     private const val CACHE_EXPIRATION_HOURS = 1L
-    private const val CACHE_EXPIRATION_MILLIS = 60 * 60 * 1000L // 1 hour in milliseconds
+    private const val CACHE_EXPIRATION_MILLIS = 60 * 60 * 1000L // 1 hour
 
     fun isCacheValid(createdAt: Long): Boolean {
         val currentTime = System.currentTimeMillis()

@@ -43,8 +43,4 @@ object BookmarkMapper {
     fun fromEntityListToDomain(entities: List<BookmarkEntity>): List<CuratedImage> {
         return entities.map { fromEntityToDomain(it) }
     }
-
-    fun fromDomainListToEntity(images: List<CuratedImage>): List<BookmarkEntity> {
-        return images.map { fromDomainToEntity(it) }
-    }
 }
